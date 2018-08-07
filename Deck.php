@@ -2,7 +2,7 @@
 
 class Deck
 {
-    	private static $instance;
+    	private static $instance = null;
 
 	public $cards = array(2,3,4,5,6,7,8,9,10,'J', 'Q', 'K', 'A'); 
 	public $diamonds = [];
@@ -14,7 +14,7 @@ class Deck
 
 	public static function getInstance()
 	{
-		if (!isset(self::$instance)) {
+		if (self::$instance == null) {
 		    self::$instance = new self();
 		}
 
@@ -24,12 +24,25 @@ class Deck
 	private function __construct()
 	{
 		foreach($this->cards as $key => $card){
-			$this->diamonds[$card] = 'd' . $card; 
-			$this->clubs[$card] = 'c'. $card; 
-			$this->hearts[$card] = 'h'. $card; 
-			$this->spades[$card] = 's'. $card; 
-		}
+			$this->diamonds[] = '&diams;' . $card; 
+			$this->clubs[] = '&clubs;'. $card; 
+			$this->hearts[] = '&hearts;'. $card; 
+			$this->spades[] = '&spades;'. $card; 
+		}		
+
 		$this->deck = array_merge($this->diamonds, $this->clubs, $this->hearts, $this->spades);
+
+		echo 'Aantal Kaarten: ' . count($this->deck) . '<br>'	;
+	}
+
+	public function getCount()
+	{
+		$count = 0;
+
+		foreach($this->deck as $key => $suit){
+			$count += count($this->deck[$key]);
+		}
+		return $count;
 	}
 
 	public static function getDeck()
@@ -39,18 +52,17 @@ class Deck
 
 	public function shuffle()
 	{
-		shuffle($this->diamonds);
-		shuffle($this->clubs);
-		shuffle($this->hearts);
-		shuffle($this->spades);
-
-		$deck = array_merge([$this->diamonds, $this->clubs, $this->hearts, $this->spades]);
-		shuffle($deck);
-		return $deck;
+		shuffle($this->deck);
+		
+		return $this->deck;
 	}
 
 	public function takeCard($name = null, $count = 1)
 	{
+		if(empty($this->deck)){
+			echo date("h:i:sa") . ": Game Over <br>";
+			exit();
+		}
 		$cards = [];
 
 		while($count > 0){
